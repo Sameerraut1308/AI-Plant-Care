@@ -1,7 +1,7 @@
 streamlit
-tensorflow==2.19.1
-keras==3.8.0
-numpy==1.26.4
+tensorflow
+keras
+numpy
 pandas
 matplotlib
 seaborn
