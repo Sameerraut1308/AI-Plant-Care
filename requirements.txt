@@ -56,6 +56,6 @@ wheel==0.46.3
 wrapt==2.1.1
 
 streamlit
-tensorflow
-numpy
+tensorflow==2.16.1
+numpy==1.26.4
 pillow
