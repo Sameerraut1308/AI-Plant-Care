@@ -1,7 +1,64 @@
-import requests
-import streamlit as st
+import io
+import os
 
-BACKEND_URL = "http://localhost:5000"
+import numpy as np
+import streamlit as st
+from PIL import Image
+import tensorflow as tf
+
+CLASS_NAMES = [
+    'Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust',
+    'Apple___healthy', 'Blueberry___healthy', 'Cherry___Powdery_mildew',
+    'Cherry___healthy', 'Corn___Cercospora_leaf_spot Gray_leaf_spot',
+    'Corn___Common_rust', 'Corn___Northern_Leaf_Blight', 'Corn___healthy',
+    'Grape___Black_rot', 'Grape___Esca_(Black_Measles)',
+    'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)', 'Grape___healthy',
+    'Orange___Haunglongbing_(Citrus_greening)', 'Peach___Bacterial_spot',
+    'Peach___healthy', 'Pepper,_bell___Bacterial_spot', 'Pepper,_bell___healthy',
+    'Potato___Early_blight', 'Potato___Late_blight', 'Potato___healthy',
+    'Raspberry___healthy', 'Soybean___healthy', 'Squash___Powdery_mildew',
+    'Strawberry___Leaf_scorch', 'Strawberry___healthy', 'Tomato___Bacterial_spot',
+    'Tomato___Early_blight', 'Tomato___Late_blight', 'Tomato___Leaf_Mold',
+    'Tomato___Septoria_leaf_spot',
+    'Tomato___Spider_mites Two-spotted_spider_mite', 'Tomato___Target_Spot',
+    'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus',
+    'Tomato___healthy',
+]
+
+DISEASE_ACTIONS = {
+    True: [
+        "Isolate affected plants to prevent spread.",
+        "Consult an agricultural expert.",
+        "Consider appropriate treatment or fungicide.",
+        "Monitor other plants for similar symptoms.",
+    ],
+    False: [
+        "Continue regular watering and care.",
+        "Ensure adequate sunlight and nutrients.",
+        "Monitor for any changes in appearance.",
+        "Maintain good air circulation.",
+    ],
+}
+
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "model", "plant_disease_model.h5")
+
+@st.cache_resource(show_spinner="Loading AI model...")
+def load_model():
+    return tf.keras.models.load_model(MODEL_PATH)
+
+def predict(image_bytes: bytes):
+    model = load_model()
+    img = Image.open(io.BytesIO(image_bytes)).convert("RGB").resize((224, 224))
+    arr = np.expand_dims(np.array(img) / 255.0, axis=0)
+    preds = model.predict(arr)
+    idx = int(np.argmax(preds))
+    confidence = round(float(np.max(preds)) * 100, 2)
+    plant, condition = CLASS_NAMES[idx].split("___")
+    plant = plant.replace("_", " ")
+    condition = condition.replace("_", " ")
+    is_disease = "healthy" not in condition.lower()
+    status = "DISEASE DETECTED" if is_disease else "HEALTHY PLANT"
+    return plant, condition, confidence, is_disease, status, DISEASE_ACTIONS[is_disease]
 
 st.set_page_config(
     page_title="PlantCare AI",
@@ -90,24 +147,12 @@ elif page == "Analyse Plant":
         if analyse:
             with st.spinner("Analysing image with AI model..."):
                 try:
-                    files = {
-                        "file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)
-                    }
-                    response = requests.post(
-                        f"{BACKEND_URL}/api/predict", files=files, timeout=60
+                    plant, condition, confidence, is_disease, status, actions = predict(
+                        uploaded_file.getvalue()
                     )
-                    response.raise_for_status()
-                    data = response.json()
 
                     st.markdown("---")
                     st.subheader("Analysis Complete")
-
-                    is_disease = data.get("is_disease", False)
-                    status     = data.get("status", "")
-                    plant      = data.get("plant", "")
-                    condition  = data.get("condition", "")
-                    confidence = data.get("confidence", 0)
-                    actions    = data.get("actions", [])
 
                     r1, r2 = st.columns(2)
                     with r1:
@@ -131,11 +176,6 @@ elif page == "Analyse Plant":
                         for action in actions:
                             st.write(f"- {action}")
 
-                except requests.exceptions.ConnectionError:
-                    st.error(
-                        "Cannot connect to the backend on port 5000. "
-                        "Start it with: `python model/app.py`"
-                    )
                 except Exception as exc:
                     st.error(f"Prediction failed: {exc}")
 
