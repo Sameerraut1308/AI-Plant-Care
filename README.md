@@ -15,19 +15,32 @@
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
 
-## Overview
+## Project Overview
+PlantCare AI is a deep learning based system that detects plant diseases using leaf images. The system uses transfer learning with the MobileNetV2 model trained on the PlantVillage dataset. Users can upload a plant leaf image and the system predicts the disease along with a confidence score.
 
-PlantCare AI is an intelligent plant disease classification system designed to provide accurate and efficient plant disease diagnosis using advanced deep learning techniques. By leveraging transfer learning with pre-trained convolutional neural networks, the system enables rapid and reliable plant pathology analysis suitable for agricultural professionals, farmers, and gardeners.
+This project was developed as part of the SmartBridge Artificial Intelligence and Machine Learning course.
 
-The project utilizes the New Plant Diseases Dataset, which contains over 87,000 annotated plant leaf images categorized into 38 distinct disease classes. This comprehensive dataset includes various diseases affecting major crops including Apple, Corn, Grape, Potato, Tomato, and others.
+---
 
 ## Problem Statement
+Plant diseases significantly reduce crop productivity and quality. Early detection of plant diseases can help farmers take preventive actions and reduce agricultural losses.
 
-Plant diseases significantly impact agricultural productivity and crop yields worldwide. Current disease detection methods rely heavily on manual inspection by agricultural experts, which is time-consuming, labor-intensive, and often subject to human error. The lack of accessible and scalable diagnostic tools limits farmers' ability to quickly identify and respond to disease outbreaks, resulting in substantial crop losses.
+---
 
-## Solution Approach
+## Proposed Solution
+This system uses a convolutional neural network with transfer learning to classify plant diseases from leaf images. A Streamlit-based web interface allows users to upload images and receive disease predictions.
 
-PlantCare AI addresses this challenge through transfer learning, leveraging the pre-trained MobileNetV2 convolutional neural network (CNN) to achieve rapid model development and high classification accuracy. Transfer learning allows the model to benefit from pre-existing knowledge of image feature patterns, significantly enhancing performance while reducing computational requirements.
+---
+
+## Technologies Used
+- Python
+- TensorFlow / Keras
+- Transfer Learning (MobileNetV2)
+- Streamlit
+- NumPy
+- PlantVillage Dataset
+
+--- 
 
 ### Key Advantages of Transfer Learning
 
@@ -89,50 +102,41 @@ Integration into agricultural training platforms provides students and technicia
 - High-resolution leaf images
 - Balanced representation across disease categories
 
-## Model Architecture
+- ## Project Workflow
 
-The project employs **MobileNetV2**, a lightweight yet efficient convolutional neural network architecture specifically designed for resource-constrained environments.
+### Step 1: Data Collection
+The PlantVillage dataset containing plant leaf images of multiple diseases, was used.
 
-### Architecture Highlights
+### Step 2: Data Preprocessing
+Images were resized to 224x224 and normalized before feeding them into the model.
 
-- **Base Model**: Pre-trained MobileNetV2 on ImageNet dataset
-- **Transfer Learning**: Fine-tuning of top layers with disease classification data
-- **Input Size**: 224x224 RGB images
-- **Output**: 38-class disease classification with confidence scores
-- **Optimization**: Designed for deployment on mobile and edge devices
+### Step 3: Model Development
+Transfer learning using MobileNetV2 was used to train the plant disease detection model.
 
-## Requirements
+### Step 4: Model Training
+The model was trained on the dataset to classify plant diseases into multiple classes.
 
-- Python 3.8+
-- TensorFlow/Keras
-- NumPy
-- Pandas
-- Matplotlib
-- Scikit-learn
-- OpenCV
+### Step 5: Model Evaluation
+The trained model predicts the plant disease and displays a confidence score.
 
-Detailed requirements are available in `requirements.txt`.
+### Step 6: Deployment
+A Streamlit web application was developed to allow users to upload plant leaf images and receive predictions.
 
-## Installation
+---
 
-1. Clone or download the repository:
-   ```bash
-   cd AI-Plant-Care
-   ```
 
-2. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+## How to Run the Project
 
-3. Download the New Plant Diseases Dataset:
-   - Obtain the dataset and place it in the `dataset/` directory
-   - Ensure proper directory structure within `dataset/`
+1. Install required libraries
 
-4. Verify the installation:
-   ```bash
-   python -c "import tensorflow; print(tensorflow.__version__)"
-   ```
+pip install -r requirements.txt
+
+2. Run the application
+
+streamlit run app.py
+
+---
+
 
 ## Usage
 
@@ -164,26 +168,21 @@ Classify a plant leaf image:
 python model/predict.py --image_path <path_to_leaf_image>
 ```
 
-## Project Structure
+## Output
+The system predicts:
 
-```
-AI-Plant-Care/
-├── README.md                    # Project documentation
-├── requirements.txt             # Python dependencies
-├── dataset/                     # Plant diseases dataset directory
-│   └── README.md               # Dataset documentation
-├── preprocessing/               # Data preprocessing scripts
-│   └── README.md               # Preprocessing documentation
-├── model/                       # Model training and inference
-│   ├── README.md               # Model documentation
-│   ├── train.py                # Training script
-│   ├── evaluate.py             # Evaluation script
-│   └── predict.py              # Prediction/inference script
-└── main.py                      # Main entry point
-```
+- Plant type
+- Disease name
+- Confidence score
+
+---
+
+## Future Improvements
+- Add remedy suggestions for detected diseases
+- Deploy the system as a web application
+- Improve model accuracy with additional training data
 
 ## Contributing
-
 Contributions to PlantCare AI are welcome. Please ensure:
 - Code follows project conventions
 - Changes are documented appropriately
