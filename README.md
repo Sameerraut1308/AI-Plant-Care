@@ -89,6 +89,13 @@ Integration into agricultural training platforms provides students and technicia
 
 **Dataset Name**: New Plant Diseases Dataset
 
+Dataset source:
+https://www.kaggle.com/datasets/vipoooool/new-plant-diseases-dataset
+
+The dataset contains images of plant leaves belonging to multiple plant species and disease categories.
+
+Due to GitHub storage limitations, the dataset is not included in this repository.
+
 **Dataset Statistics**:
 - Total Images: 87,000+
 - Number of Classes: 38
